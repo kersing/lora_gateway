@@ -10,15 +10,20 @@ CROSS_COMPILE ?=
 CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
 
-CFLAGS := -O2 -Wall -Wextra -std=c99 -Iinc -I.
 
 ### library.cfg configuration file processing
 
 ifeq ($(CFG_SPI),native)
+  CFLAGS      := -O2 -Wall -Wextra -std=c99 -Iinc -I. 
   CFG_SPI_MSG := Linux native SPI driver
   CFG_SPI_OPT := CFG_SPI_NATIVE
 else ifeq ($(CFG_SPI),ftdi)
+  CFLAGS      := -O2 -Wall -Wextra -std=c99 -Iinc -I. 
   CFG_SPI_MSG := FTDI SPI-over-USB bridge using libmpsse/libftdi/libusb
+  CFG_SPI_OPT := CFG_SPI_FTDI
+else ifeq ($(CFG_SPI),mac)
+  CFLAGS      := -O2 -Wall -Wextra -std=c99 -Iinc -I. -I/opt/local/include  -I/usr/local/include -I/opt/local/include/libftdi1 
+  CFG_SPI_MSG := FTDI SPI-over-USB bridge on the MAC using libmpsse/libftdi/libusb
   CFG_SPI_OPT := CFG_SPI_FTDI
 else
   $(error No SPI physical layer selected, check ../target.cfg file.)
@@ -30,6 +35,8 @@ ifeq ($(CFG_SPI),native)
   LIBS := -lloragw -lrt -lm
 else ifeq ($(CFG_SPI),ftdi)
   LIBS := -lloragw -lrt -lmpsse -lm
+else ifeq ($(CFG_SPI),mac)
+  LIBS := -lloragw -lmpsse -lm
 endif
 
 ### general build targets
@@ -78,6 +85,9 @@ obj/loragw_spi.o: src/loragw_spi.native.c inc/loragw_spi.h inc/config.h
 else ifeq ($(CFG_SPI),ftdi)
 obj/loragw_spi.o: src/loragw_spi.ftdi.c inc/loragw_spi.h inc/config.h
 	$(CC) -c $(CFLAGS) $< -o $@
+else ifeq ($(CFG_SPI),mac)
+obj/loragw_spi.o: src/loragw_spi.ftdi.c inc/loragw_spi.h inc/config.h
+	$(CC) -c $(CFLAGS) $< -o $@
 endif
 
 obj/loragw_reg.o: src/loragw_reg.c inc/loragw_reg.h inc/loragw_spi.h inc/config.h
@@ -94,6 +104,8 @@ obj/loragw_gps.o: src/loragw_gps.c inc/loragw_gps.h inc/config.h
 ifeq ($(CFG_SPI),native)
 libloragw.a: obj/loragw_hal.o obj/loragw_gps.o obj/loragw_reg.o obj/loragw_spi.o obj/loragw_aux.o
 else ifeq ($(CFG_SPI),ftdi)
+libloragw.a: obj/loragw_hal.o obj/loragw_gps.o obj/loragw_reg.o obj/loragw_spi.o obj/loragw_aux.o
+else ifeq ($(CFG_SPI),mac)
 libloragw.a: obj/loragw_hal.o obj/loragw_gps.o obj/loragw_reg.o obj/loragw_spi.o obj/loragw_aux.o
 endif
 	$(AR) rcs $@ $^

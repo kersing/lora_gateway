@@ -42,6 +42,15 @@ Maintainer: Sylvain Miermont
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
 
 /* This implementation is POSIX-pecific and require a fix to be compatible with C99 */
+#ifdef __MACH__
+#include <unistd.h>
+
+void wait_ms(unsigned long a) {
+	usleep(1000*a);
+	}
+
+#else
+
 void wait_ms(unsigned long a) {
 	struct timespec dly;
 	struct timespec rem;
@@ -57,5 +66,8 @@ void wait_ms(unsigned long a) {
 	}
 	return;
 }
+
+#endif
+
 
 /* --- EOF ------------------------------------------------------------------ */

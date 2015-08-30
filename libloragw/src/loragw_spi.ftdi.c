@@ -51,8 +51,10 @@ Maintainer: Sylvain Miermont
 #define WRITE_ACCESS	0x80
 
 /* parameters for a FT2232H */
+//TODO: These should no be hardcoded.
 #define VID		0x0403
-#define PID		0x6010
+//#define PID		0x6010  /* Value needed for Kerlink (also the default) */
+#define PID		0x6014      /* Value needed for IMST *
 
 /* -------------------------------------------------------------------------- */
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
