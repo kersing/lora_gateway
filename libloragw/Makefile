@@ -70,6 +70,8 @@ inc/config.h: ../VERSION library.cfg
 	@echo "	#define DEBUG_HAL	$(DEBUG_HAL)" >> $@
 	@echo "	#define DEBUG_GPS	$(DEBUG_GPS)" >> $@
 	@echo "	#define DEBUG_GPIO	$(DEBUG_GPIO)" >> $@
+  # Platform selection
+	@echo "	#include \"$(PLATFORM).h\"" >> $@
   # end of file
 	@echo "#endif" >> $@
 	@echo "*** Configuration seems ok ***"

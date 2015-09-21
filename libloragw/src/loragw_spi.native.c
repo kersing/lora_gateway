@@ -34,6 +34,7 @@ Maintainer: Sylvain Miermont
 #include "loragw_spi.h"
 #include "loragw_hal.h"
 
+
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
 
@@ -53,9 +54,6 @@ Maintainer: Sylvain Miermont
 
 #define READ_ACCESS		0x00
 #define WRITE_ACCESS	0x80
-#define SPI_SPEED		8000000
-#define SPI_DEV_PATH	"/dev/spidev0.0"
-//#define SPI_DEV_PATH	"/dev/spidev32766.0"
 
 /* -------------------------------------------------------------------------- */
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
