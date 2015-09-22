@@ -18,7 +18,8 @@ Maintainer: Sylvain Miermont
 /* --- DEPENDANCIES --------------------------------------------------------- */
 
 /* fix an issue between POSIX and C99 */
-#if __STDC_VERSION__ >= 199901L
+#ifdef __MACH__
+#elif __STDC_VERSION__ >= 199901L
 	#define _XOPEN_SOURCE 600
 #else
 	#define _XOPEN_SOURCE 500
@@ -73,6 +74,38 @@ int parse_gateway_configuration(const char * conf_file);
 void open_log(void);
 
 void usage (void);
+
+/* -------------------------------------------------------------------------- */
+/* --- MAC OSX Extensions  -------------------------------------------------- */
+
+/* Note, since the methods below are not a real-time solution, the concentrator
+ * may fail occasionally. However, using the Mac as a platform is not for
+ * production but for testing only. */
+
+#ifdef __MACH__
+#define CLOCK_REALTIME 0
+#define CLOCK_MONOTONIC 0
+#include <sys/time.h>
+
+static int clock_gettime(int clk_id, struct timespec* t) {
+	(void) clk_id;
+	struct timeval now;
+    int rv = gettimeofday(&now, NULL);
+    if (rv) return rv;
+    t->tv_sec  = now.tv_sec;
+    t->tv_nsec = now.tv_usec * 1000;
+    return 0;
+}
+
+static int clock_nanosleep(
+		clock_t __attribute__((__unused__)) clock_id,
+		int __attribute__((__unused__)) flags,
+		const struct timespec *request,
+		struct timespec *remain) {
+	return nanosleep(request,remain);
+}
+#endif
+
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE FUNCTIONS DEFINITION ----------------------------------------- */

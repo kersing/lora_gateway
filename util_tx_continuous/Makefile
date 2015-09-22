@@ -34,6 +34,8 @@ ifeq ($(CFG_SPI),native)
   LIBS := -lloragw -lrt
 else ifeq ($(CFG_SPI),ftdi)
   LIBS := -lloragw -lrt -lmpsse
+else ifeq ($(CFG_SPI),mac)
+  LIBS := -lloragw -lmpsse
 endif
 
 ### General build targets

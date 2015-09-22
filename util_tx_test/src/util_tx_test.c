@@ -18,7 +18,8 @@ Maintainer: Sylvain Miermont
 /* --- DEPENDANCIES --------------------------------------------------------- */
 
 /* fix an issue between POSIX and C99 */
-#if __STDC_VERSION__ >= 199901L
+#ifdef __MACH__
+#elif __STDC_VERSION__ >= 199901L
 	#define _XOPEN_SOURCE 600
 #else
 	#define _XOPEN_SOURCE 500
