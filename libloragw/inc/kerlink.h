@@ -10,7 +10,7 @@
 
 /* parameters for native spi */
 #define SPI_SPEED		8000000
-#define SPI_DEV_PATH	"/dev/spidev0.0"
+#define SPI_DEV_PATH	"/dev/spidev32766.0"
 
 /* parameters for a FT2232H */
 #define VID		        0x0403
