@@ -8,6 +8,8 @@
 #ifndef _LORANK_H_
 #define _LORANK_H_
 
+/* Human readable platform definition */
+#define DISPLAY_PLATFORM "Lorank"
 
 /* parameters for native spi */
 #define SPI_SPEED		8000000

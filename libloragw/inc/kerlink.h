@@ -8,6 +8,9 @@
 #ifndef _KERLINK_H_
 #define _KERLINK_H_
 
+/* Human readable platform definition */
+#define DISPLAY_PLATFORM "Kerlink"
+
 /* parameters for native spi */
 #define SPI_SPEED		8000000
 #define SPI_DEV_PATH	"/dev/spidev32766.0"
