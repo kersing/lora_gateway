@@ -5,8 +5,8 @@
  *      Author: ticapix
  */
 
-#ifndef _IMST_RPI_H_
-#define _IMST_RPI_H_
+#ifndef _LINKLABS_BLOWFISH_H_
+#define _LINKLABS_BLOWFISH_H_
 
 /* Human readable platform definition */
 #define DISPLAY_PLATFORM "LinkLabs Blowfish + Rpi"
@@ -20,4 +20,4 @@
 #define VID		        0x0403
 #define PID		        0x6014
 
-#endif /* _IMST_RPI_H_ */
+#endif /* _LINKLABS_BLOWFISH_H_ */
