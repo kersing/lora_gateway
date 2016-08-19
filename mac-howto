@@ -1,0 +1,87 @@
+It is possible to operate the IMST concentrator with USB  connection directly from the USB port of a Mac. However,
+there are many pitfalls. Forgetting just one step usually results in nothing working. The tips below are for Yosemite,
+based on own experience.
+
+Main steps:
+1) Install the FTDI drivers.
+2) Install mpsse.
+3) Compile the lora_gateway and packet_forwarder with the 'mac' setting.
+4) Manually remove Apples FTDI-USB driver
+
+The details.
+
+1) Installing the drivers should not be to great a problem. There are two possible roads
+here. One, download and instal from FTDI's website: http://www.ftdichip.com/Drivers/D2XX.htm
+(no experience) or use macports with
+$ sudo port install ftdi1
+
+2) You need to download, compile and install mpsse libmpsse, on a suitable place:
+$ git clone https://github.com/devttys0/libmpsse
+
+The minimum change you need to make is add #include <stdlib.h> to the support.c file.
+Then:
+$ ./configure --disable-python
+
+Now, in case you get some errors (most likely) try this:
+./configure LDFLAGS=-L/opt/local/lib CFLAGS="-I/opt/local/include -I/opt/local/include/libftdi1" --disable-python
+
+Then (as long as no errors occur)
+$ make
+$ sudo mkdir -p /usr/local/include
+$ make install
+
+3) Edit the lora_gateway/libloragw/library.cfg to set the following values:
+CFG_SPI= mac
+PLATFORM= lorank
+
+and then compile
+$ cd lora_gateway
+$ make all
+$ cd ../packet_forwarder
+$ make mac
+
+4) Remove the ancient apple ftdi driver (this step is needed at least after each reboot)
+$ sudo kextunload /System/Library/Extensions/FTDIUSBSerialDriver.kext
+
+5) Now you can try to contact the concentrator (connect it!)
+$ cd lora_gateway/libloragw
+$ ./test_loragw_reg
+
+This should give something like:
++++MATCH+++ reg number 0 read: 0 (0) default: 0 (0)
++++MATCH+++ reg number 1 read: 0 (0) default: 0 (0)
++++MATCH+++ reg number 2 read: 103 (67) default: 103 (67)
++++MATCH+++ reg number 3 read: 0 (0) default: 0 (0)
+###MISMATCH### reg number 4 read: 196 (c4) default: 0 (0)
++++MATCH+++ reg number 5 read: 0 (0) default: 0 (0)
++++MATCH+++ reg number 6 read: 0 (0) default: 0 (0)
+etc.
+
+If you get
+Beginning of test for loragw_reg.c
+ERROR: CONCENTRATOR UNCONNECTED
+IMPLICIT_PAYLOAD_LENGHT = -472136177 (should be 197)
+FRAME_SYNCH_PEAK2_POS = -472136177 (should be 11)
+etc
+
+something is still wrong, retry it as root:
+$ sudo ./test_loragw_reg
+
+Note that a sleep of your computer may require a reboot and a subsequent unload
+of the driver to restore contact to the concentrator.
+
+In you got this far, configure the global and local confs in the polyforwarder directory
+(make sure it remains valid jsin!) and fire up the polyforwarder. The standard lora_pkt_fwd
+is not suited for ftdi.
+
+$ cd packet_forwarder/poly_pkt_fwd
+$ nano global_conf.json
+$ nano local_conf.json
+$ ./poly_pkt_fwd
+
+
+Good luck.
+Ruud Vlaming. 2016
+
+
+
