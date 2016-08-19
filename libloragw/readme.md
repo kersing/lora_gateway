@@ -287,15 +287,6 @@ For embedded platforms, the function could be rewritten using hardware timers.
 All modules use a fprintf(stderr,...) function to display debug diagnostic
 messages if the DEBUG_xxx is set to 1 in library.cfg
 
-The other settings available in library.cfg are:
-
-* CFG_SPI configures how the link between the host and the concentrator chip 
-  is done. It is highly recommended to use native SPI instead of FTDI when possible
-  for permormance reasons.
-  Note: when using native SPI on linux host, ensure that the /dev/spidevX.X
-  which is to be opened on your host is the same as the one defined in
-  libloragw/src/loragw_spi.native.c
-
 ### 3.3. Building procedures ###
 
 For cross-compilation set the ARCH and CROSS_COMPILE variables in the Makefile,
@@ -313,16 +304,7 @@ and the *.c source files.
 The library.cfg is also used directly to select the proper set of dynamic 
 libraries to be linked with.
 
-### 3.4. Dynamic libraries requirements ###
-
-Depending on config, SPI module needs LibMPSSE to access the FTDI SPI-over-USB
-bridge. Please read install_ftdi.txt for installation instructions.
-
-The code was tested with version 1.3 of LibMPSSE:
-http://libmpsse.googlecode.com/files/libmpsse-1.3.tar.gz
-SHA1 Checksum: 	1b994a23b118f83144261e3e786c43df74a81cd5
-
-### 3.5. Export ###
+### 3.4. Export ###
 
 Once build, to use that library on another system, you need to export the
 following files :
@@ -360,10 +342,8 @@ are platform-dependant.
 The functions must be rewritten depending on the SPI bridge you use:
 
 * SPI master matched to the Linux SPI device driver (provided)
-* SPI over USB using FTDI components (provided)
+* SPI over USB using FTDI components (not provided)
 * native SPI using a microcontroller peripheral (not provided)
-
-Edit library.cfg to chose which SPI physical interface you want to use.
 
 You can use the test program test_loragw_spi to check with a logic analyser
 that the SPI communication is working
@@ -406,7 +386,6 @@ For a typical application you need to:
 * include loragw_hal.h in your program source
 * link to the libloragw.a static library during compilation
 * link to the librt library due to loragw_aux dependencies (timing functions)
-* link to the libmpsse library if you use a FTDI SPI-over-USB bridge
 
 For an application that will also access the concentrator configuration 
 registers directly (eg. for advanced configuration) you also need to:

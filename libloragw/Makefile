@@ -39,7 +39,7 @@ INCLUDES = $(wildcard inc/*.h)
 ### linking options
 
 ifeq ($(CFG_SPI),native)
-LIBS := -lloragw -lrt -lm
+  LIBS := -lloragw -lrt -lm
 else ifeq ($(CFG_SPI),ftdi)
   LIBS := -lloragw -lrt -lmpsse -lm
 else ifeq ($(CFG_SPI),mac)
