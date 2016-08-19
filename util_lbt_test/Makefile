@@ -1,6 +1,6 @@
 ### Application-specific constants
 
-APP_NAME := util_pkt_logger
+APP_NAME := util_lbt_test
 
 ### Environment constants 
 
@@ -9,7 +9,6 @@ ARCH ?=
 CROSS_COMPILE ?=
 
 ### External constant definitions
-# must get library build option to know if mpsse must be linked or not
 
 include $(LGW_PATH)/library.cfg
 
@@ -26,15 +25,16 @@ OBJDIR = obj
 # List the library sub-modules that are used by the application
 
 LGW_INC = $(LGW_PATH)/inc/config.h
-LGW_INC += $(LGW_PATH)/inc/loragw_hal.h
+LGW_INC += $(LGW_PATH)/inc/loragw_reg.h
+LGW_INC += $(LGW_PATH)/inc/loragw_fpga.h
 
 ### Linking options
 
 ifeq ($(CFG_SPI),native)
-  LIBS := -lloragw -lrt  -lm
-else ifeq ($(CFG_SPI),ftdi) 
+  LIBS := -lloragw -lrt -lm
+else ifeq ($(CFG_SPI),ftdi)
   LIBS := -lloragw -lrt -lmpsse  -lm
-else ifeq ($(CFG_SPI),mac)  
+else ifeq ($(CFG_SPI),mac)
   LIBS := -lloragw -lmpsse -lm
 endif
 
@@ -58,20 +58,14 @@ $(LGW_PATH)/libloragw.a: $(LGW_INC)
 	$(MAKE) all -C $(LGW_PATH); \
 	fi
 
-### Sub-modules compilation
-
+### Main program compilation and assembly
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
-$(OBJDIR)/parson.o: src/parson.c inc/parson.h | $(OBJDIR)
-	$(CC) -c $(CFLAGS) $< -o $@
-
-### Main program compilation and assembly
-
-$(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) inc/parson.h | $(OBJDIR)
+$(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) | $(OBJDIR)
 	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
 
-$(APP_NAME): $(OBJDIR)/$(APP_NAME).o $(LGW_PATH)/libloragw.a $(OBJDIR)/parson.o
-	$(CC) -L$(LGW_PATH) $< $(OBJDIR)/parson.o -o $@ $(LIBS)
+$(APP_NAME): $(OBJDIR)/$(APP_NAME).o $(LGW_PATH)/libloragw.a
+	$(CC) -L$(LGW_PATH) $< -o $@ $(LIBS)
 
 ### EOF

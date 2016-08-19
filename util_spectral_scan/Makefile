@@ -1,7 +1,3 @@
-### Application-specific constants
-
-APP_NAME := util_pkt_logger
-
 ### Environment constants 
 
 LGW_PATH ?= ../libloragw
@@ -9,18 +5,17 @@ ARCH ?=
 CROSS_COMPILE ?=
 
 ### External constant definitions
-# must get library build option to know if mpsse must be linked or not
 
 include $(LGW_PATH)/library.cfg
 
 ### Constant symbols
 
-CC := $(CROSS_COMPILE)gcc
-AR := $(CROSS_COMPILE)ar
-
-CFLAGS=-O2 -Wall -Wextra -std=c99 -Iinc -I.
+CC = $(CROSS_COMPILE)gcc
+AR = $(CROSS_COMPILE)ar
+CFLAGS = -O2 -Wall -Wextra -std=c99 -I inc
 
 OBJDIR = obj
+INCLUDES = $(wildcard inc/*.h)
 
 ### Constants for LoRa concentrator HAL library
 # List the library sub-modules that are used by the application
@@ -31,20 +26,20 @@ LGW_INC += $(LGW_PATH)/inc/loragw_hal.h
 ### Linking options
 
 ifeq ($(CFG_SPI),native)
-  LIBS := -lloragw -lrt  -lm
-else ifeq ($(CFG_SPI),ftdi) 
-  LIBS := -lloragw -lrt -lmpsse  -lm
-else ifeq ($(CFG_SPI),mac)  
-  LIBS := -lloragw -lmpsse -lm
+  LIBS := -lloragw -lrt
+else ifeq ($(CFG_SPI),ftdi)
+  LIBS := -lloragw -lrt -lmpsse
+else ifeq ($(CFG_SPI),mac)
+  LIBS := -lloragw -lmpsse
 endif
 
 ### General build targets
 
-all: $(APP_NAME)
+all: util_spectral_scan
 
 clean:
 	rm -f $(OBJDIR)/*.o
-	rm -f $(APP_NAME)
+	rm -f util_spectral_scan
 
 ### HAL library (do no force multiple library rebuild even with 'make -B')
 
@@ -63,15 +58,12 @@ $(LGW_PATH)/libloragw.a: $(LGW_INC)
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
-$(OBJDIR)/parson.o: src/parson.c inc/parson.h | $(OBJDIR)
-	$(CC) -c $(CFLAGS) $< -o $@
-
-### Main program compilation and assembly
-
-$(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) inc/parson.h | $(OBJDIR)
+$(OBJDIR)/%.o: src/%.c $(INCLUDES) | $(OBJDIR)
 	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
 
-$(APP_NAME): $(OBJDIR)/$(APP_NAME).o $(LGW_PATH)/libloragw.a $(OBJDIR)/parson.o
-	$(CC) -L$(LGW_PATH) $< $(OBJDIR)/parson.o -o $@ $(LIBS)
+### Main program assembly
+
+util_spectral_scan: $(OBJDIR)/util_spectral_scan.o
+	$(CC) -L$(LGW_PATH) $^ $(LIBS) -o $@
 
 ### EOF

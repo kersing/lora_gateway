@@ -14,7 +14,8 @@ Description:
 	Could be used with multiple SPI ports in parallel (explicit file descriptor)
 
 License: Revised BSD License, see LICENSE.TXT file include in the project
-Maintainer: Sylvain Miermont
+Maintainer: Sylvain Miermont [support for ftdi was dropped from version 4.0.0 and onwards]
+Maintainer: Ruud Vlaming
 */
 
 
@@ -112,7 +113,8 @@ int lgw_spi_close(void *spi_target) {
 
 /* Simple write */
 /* transaction time: .6 to 1 ms typically */
-int lgw_spi_w(void *spi_target, uint8_t address, uint8_t data) {
+// TODO : new fields spi_mux_mode and spi_mux_target are ingnored here, is that OK?
+int lgw_spi_w(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, uint8_t address, uint8_t data) {
 	struct mpsse_context *mpsse = spi_target;
 	uint8_t out_buf[2];
 	int a, b, c;
@@ -146,7 +148,8 @@ int lgw_spi_w(void *spi_target, uint8_t address, uint8_t data) {
 
 /* Simple read (using Transfer function) */
 /* transaction time: 1.1 to 2 ms typically */
-int lgw_spi_r(void *spi_target, uint8_t address, uint8_t *data) {
+// TODO : new fields spi_mux_mode and spi_mux_target are ingnored here, is that OK?
+int lgw_spi_r(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, uint8_t address, uint8_t *data) {
 	struct mpsse_context *mpsse = spi_target;
 	uint8_t out_buf[2];
 	uint8_t *in_buf = NULL;
@@ -188,7 +191,8 @@ int lgw_spi_r(void *spi_target, uint8_t address, uint8_t *data) {
 /* Burst (multiple-byte) write */
 /* transaction time: 3.7ms for 2500 data bytes @6MHz, 1kB chunks */
 /* transaction time: 0.5ms for 16 data bytes @6MHz, 1kB chunks */
-int lgw_spi_wb(void *spi_target, uint8_t address, uint8_t *data, uint16_t size) {
+// TODO : new fields spi_mux_mode and spi_mux_target are ingnored here, is that OK?
+int lgw_spi_wb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, uint8_t address, uint8_t *data, uint16_t size) {
 	struct mpsse_context *mpsse = spi_target;
 	uint8_t command;
 	uint8_t *out_buf = NULL;
@@ -255,7 +259,8 @@ int lgw_spi_wb(void *spi_target, uint8_t address, uint8_t *data, uint16_t size) 
 /* Burst (multiple-byte) read (using FastWrite & FastRead functions) */
 /* transaction time: 7-12ms for 2500 data bytes @6MHz, 1kB chunks */
 /* transaction time: 2ms for 16 data bytes @6MHz, 1kB chunks */
-int lgw_spi_rb(void *spi_target, uint8_t address, uint8_t *data, uint16_t size) {
+// TODO : new fields spi_mux_mode and spi_mux_target are ingnored here, is that OK?
+int lgw_spi_rb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, uint8_t address, uint8_t *data, uint16_t size) {
 	struct mpsse_context *mpsse = spi_target;
 	uint8_t command;
 	int size_to_do, chunk_size, offset;
