@@ -10,7 +10,7 @@ Description:
     Listen Before Talk basic test application
 
 License: Revised BSD License, see LICENSE.TXT file include in the project
-Maintainer: Michael Coracin
+Maintainer: Michael Coracinlibloragw/install_ftdi.txt
 */
 
 
