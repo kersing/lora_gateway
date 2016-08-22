@@ -11,10 +11,21 @@ CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
 
 
+### Test if the file has been configured, do not accept the default
+
+ifeq ($(CFG_SPI),???) 
+  $(error Please specify CFG_SPI in lora_gateway/libloragw/library.cfg first!)
+endif
+
+ifeq ($(PLATFORM),???) 
+  $(error Please specify PLATFORM in lora_gateway/libloragw/library.cfg first!)
+endif
+
+
 ### library.cfg configuration file processing
 
 ifeq ($(CFG_SPI),native)
-CFLAGS := -O2 -Wall -Wextra -std=c99 -Iinc -I.
+  CFLAGS      := -O2 -Wall -Wextra -std=c99 -Iinc -I.
   CFG_SPI_MSG := Linux native SPI driver
   CFG_SPI_OPT := CFG_SPI_NATIVE
 else ifeq ($(CFG_SPI),ftdi)
