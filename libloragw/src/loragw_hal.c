@@ -1187,7 +1187,7 @@ int lgw_receive(uint8_t max_pkt, struct lgw_pkt_rx_s *pkt_data) {
             timestamp_correction = ((uint32_t)680000 / fsk_rx_dr) - 20;
 
             /* RSSI correction */
-            p->rssi = RSSI_FSK_POLY_0 + RSSI_FSK_POLY_1 * p->rssi + RSSI_FSK_POLY_2 * pow(p->rssi, 2);
+            p->rssi = RSSI_FSK_POLY_0 + RSSI_FSK_POLY_1 * p->rssi + RSSI_FSK_POLY_2 * (p->rssi * p->rssi);
         } else {
             DEBUG_MSG("ERROR: UNEXPECTED PACKET ORIGIN\n");
             p->status = STAT_UNDEFINED;
@@ -1618,7 +1618,7 @@ uint32_t lgw_time_on_air(struct lgw_pkt_tx_s *packet, bool isBeacon) {
     }
 
     /* Duration of 1 symbol */
-    Tsym = pow(2, SF) / BW;
+    Tsym = (double)(1 << SF) / BW;
 
     /* Duration of preamble */
     Tpreamble = (8 + 4.25) * Tsym; /* 8 programmed symbols in preamble */
