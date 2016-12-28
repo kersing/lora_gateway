@@ -29,10 +29,10 @@ ifeq ($(CFG_SPI),native)
   CFG_SPI_MSG := Linux native SPI driver
   CFG_SPI_OPT := CFG_SPI_NATIVE
 else ifeq ($(CFG_SPI),ftdi)
-ifeq ($(PLATFORM),multitech)
+ifeq ($(PLATFORM),mltitech)
   CFLAGS      := -O2 -Wall -Wextra -std=c99 -Iinc -I. -I/opt/mlinux/3.1.0/sysroots/arm926ejste-mlinux-linux-gnueabi/usr/include/libftdi1
 else
-  CFLAGS      := -O2 -Wall -Wextra -std=c99 -Iinc -I. 
+  CFLAGS      := -O2 -Wall -Wextra -std=c99 -Iinc -I. -I/usr/include/libftdi1
 endif
   CFG_SPI_MSG := FTDI SPI-over-USB bridge using libmpsse/libftdi/libusb
   CFG_SPI_OPT := CFG_SPI_FTDI
@@ -52,7 +52,7 @@ INCLUDES = $(wildcard inc/*.h)
 ifeq ($(CFG_SPI),native)
   LIBS := -lloragw -lrt -lm
 else ifeq ($(CFG_SPI),ftdi)
-  LIBS := -lloragw -lrt -lmpsse -lm
+  LIBS := -lloragw -lrt -lmpsse -lm -lusb-1.0
 else ifeq ($(CFG_SPI),mac)
   LIBS := -lloragw -lmpsse -lm
 endif
