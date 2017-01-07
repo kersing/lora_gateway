@@ -26,6 +26,7 @@ Maintainer: Ruud Vlaming
 #include <stdio.h>		/* printf fprintf */
 #include <stdlib.h>		/* malloc free */
 #include <string.h>		/* memcpy */
+#include <pthread.h>
 
 #include <mpsse.h>
 
@@ -50,6 +51,10 @@ Maintainer: Ruud Vlaming
 
 #define READ_ACCESS		0x00
 #define WRITE_ACCESS	0x80
+
+/* -------------------------------------------------------------------------- */
+/* --- PRIVATE VARIABLES ---------------------------------------------------- */
+static pthread_mutex_t mx_spi = PTHREAD_MUTEX_INITIALIZER;
 
 /* -------------------------------------------------------------------------- */
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
@@ -137,10 +142,16 @@ int lgw_spi_w(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, ui
         command_size = 2;
     }
 	
+	/* lock USB bus */
+	pthread_mutex_lock(&mx_spi);
+
 	/* MPSSE transaction */
 	a = Start(mpsse);
 	b = FastWrite(mpsse, (char *)out_buf, command_size);
 	c = Stop(mpsse);
+
+	/* unlock USB bus */
+	pthread_mutex_unlock(&mx_spi);
 	
 	/* determine return code */
 	if ((a != MPSSE_OK) || (b != MPSSE_OK) || (c != MPSSE_OK)) {
@@ -182,11 +193,17 @@ int lgw_spi_r(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, ui
         command_size = 2;
     }
 	
+	/* lock USB bus */
+	pthread_mutex_lock(&mx_spi);
+
 	/* MPSSE transaction */
 	a = Start(mpsse);
 	in_buf = (uint8_t *)Transfer(mpsse, (char *)out_buf, command_size);
 	b = Stop(mpsse);
 	
+	/* unlock USB bus */
+	pthread_mutex_unlock(&mx_spi);
+
 	/* determine return code */
 	if ((in_buf == NULL) || (a != MPSSE_OK) || (b != MPSSE_OK)) {
 		DEBUG_MSG("ERROR: SPI READ FAILURE\n");
@@ -246,6 +263,9 @@ int lgw_spi_wb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 		return LGW_SPI_ERROR;
 	}
 	
+	/* lock USB bus */
+	pthread_mutex_lock(&mx_spi);
+
 	/* start MPSSE transaction */
 	a = Start(mpsse);
 	for (i=0; size_to_do > 0; ++i) {
@@ -264,6 +284,9 @@ int lgw_spi_wb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 	}
 	c = Stop(mpsse);
 	
+	/* unlock USB bus */
+	pthread_mutex_unlock(&mx_spi);
+
 	/* deallocate data buffer */
 	free(out_buf);
 	
@@ -312,6 +335,9 @@ int lgw_spi_rb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
     }
 	size_to_do = size;
 	
+	/* lock USB bus */
+	pthread_mutex_lock(&mx_spi);
+
 	/* start MPSSE transaction */
 	a = Start(mpsse);
 	b = FastWrite(mpsse, (char *)&command, command_size);
@@ -323,6 +349,9 @@ int lgw_spi_rb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 	}
 	d = Stop(mpsse);
 	
+	/* unlock USB bus */
+	pthread_mutex_unlock(&mx_spi);
+
 	/* determine return code (only the last FastRead is checked) */
 	if ((a != MPSSE_OK) || (b != MPSSE_OK) || (c != MPSSE_OK) || (d != MPSSE_OK)) {
 		DEBUG_MSG("ERROR: SPI BURST READ FAILURE\n");
