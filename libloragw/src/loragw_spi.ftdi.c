@@ -60,7 +60,7 @@ static pthread_mutex_t mx_spi = PTHREAD_MUTEX_INITIALIZER;
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
 
 /* SPI initialization and configuration */
-int lgw_spi_open(void **spi_target_ptr) {
+int lgw_spi_open(void **spi_target_ptr, long speed) {
 	struct mpsse_context *mpsse = NULL;
 	int a, b;
 	

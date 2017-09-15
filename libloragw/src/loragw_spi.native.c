@@ -62,7 +62,7 @@ Maintainer: Sylvain Miermont
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
 
 /* SPI initialization and configuration */
-int lgw_spi_open(void **spi_target_ptr) {
+int lgw_spi_open(void **spi_target_ptr, long speed) {
     int *spi_device = NULL;
     int dev;
     int a=0, b=0;
@@ -97,7 +97,8 @@ int lgw_spi_open(void **spi_target_ptr) {
     }
 
     /* setting SPI max clk (in Hz) */
-    i = SPI_SPEED;
+    //i = SPI_SPEED;
+    i = speed;
     a = ioctl(dev, SPI_IOC_WR_MAX_SPEED_HZ, &i);
     b = ioctl(dev, SPI_IOC_RD_MAX_SPEED_HZ, &i);
     if ((a < 0) || (b < 0)) {
