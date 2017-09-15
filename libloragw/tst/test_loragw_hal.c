@@ -34,6 +34,11 @@ Maintainer: Sylvain Miermont
 #include "loragw_hal.h"
 #include "loragw_reg.h"
 #include "loragw_aux.h"
+#include "config.h"
+
+#ifndef SPI_SPEED
+#define SPI_SPEED 8000000
+#endif
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
@@ -303,7 +308,7 @@ int main(int argc, char **argv)
 */
 
     /* connect, configure and start the LoRa concentrator */
-    i = lgw_start();
+    i = lgw_start(SPI_SPEED);
     if (i == LGW_HAL_SUCCESS) {
         printf("*** Concentrator started ***\n");
     } else {

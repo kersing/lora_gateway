@@ -22,6 +22,11 @@ Maintainer: Sylvain Miermont
 #include <stdio.h>
 
 #include "loragw_spi.h"
+#include "config.h"
+
+#ifndef SPI_SPEED
+#define SPI_SPEED 8000000
+#endif
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
@@ -52,7 +57,7 @@ int main()
     }
 
     printf("Beginning of test for loragw_spi.c\n");
-    lgw_spi_open(&spi_target);
+    lgw_spi_open(&spi_target,SPI_SPEED);
 
     /* normal R/W test */
     for (i = 0; i < TIMING_REPEAT; ++i)
