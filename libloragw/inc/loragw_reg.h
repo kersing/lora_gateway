@@ -399,9 +399,10 @@ concentrator, or if we also want to reset it and configure the FPGA (if present)
 @param tx_notch_filter TX notch filter frequency to be set in the FPGA (only
 used with SX1301AP2 reference design).
 @param speed spped for SPI communications
+@param device device file for SPI communications
 @return status of register operation (LGW_REG_SUCCESS/LGW_REG_ERROR)
 */
-int lgw_connect(bool spi_only, uint32_t tx_notch_freq, long speed);
+int lgw_connect(bool spi_only, uint32_t tx_notch_freq, long speed, const char *device);
 
 /**
 @brief Disconnect LoRa concentrator by closing SPI link

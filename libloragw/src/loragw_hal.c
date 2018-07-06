@@ -703,7 +703,7 @@ int lgw_txgain_setconf(struct lgw_tx_gain_lut_s *conf) {
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-int lgw_start(long speed) {
+int lgw_start(long speed, const char *device) {
     int i, err;
     int reg_stat;
     unsigned x;
@@ -721,7 +721,7 @@ int lgw_start(long speed) {
         DEBUG_MSG("Note: LoRa concentrator already started, restarting it now\n");
     }
 
-    reg_stat = lgw_connect(false, rf_tx_notch_freq[rf_tx_enable[1]?1:0], speed);
+    reg_stat = lgw_connect(false, rf_tx_notch_freq[rf_tx_enable[1]?1:0], speed, device);
     if (reg_stat == LGW_REG_ERROR) {
         DEBUG_MSG("ERROR: FAIL TO CONNECT BOARD\n");
         return LGW_HAL_ERROR;

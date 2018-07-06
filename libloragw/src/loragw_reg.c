@@ -501,7 +501,7 @@ int reg_r_align32(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
 
 /* Concentrator connect */
-int lgw_connect(bool spi_only, uint32_t tx_notch_freq, long speed) {
+int lgw_connect(bool spi_only, uint32_t tx_notch_freq, long speed, const char *device) {
     int spi_stat = LGW_SPI_SUCCESS;
     uint8_t u = 0;
     int x;
@@ -513,7 +513,7 @@ int lgw_connect(bool spi_only, uint32_t tx_notch_freq, long speed) {
     }
 
     /* open the SPI link */
-    spi_stat = lgw_spi_open(&lgw_spi_target, speed);
+    spi_stat = lgw_spi_open(&lgw_spi_target, speed, device);
     if (spi_stat != LGW_SPI_SUCCESS) {
         DEBUG_MSG("ERROR CONNECTING CONCENTRATOR\n");
         return LGW_REG_ERROR;

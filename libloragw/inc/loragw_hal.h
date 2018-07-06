@@ -337,9 +337,10 @@ int lgw_txgain_setconf(struct lgw_tx_gain_lut_s *conf);
 /**
 @brief Connect to the LoRa concentrator, reset it and configure it according to previously set parameters
 #param speed communication speed in HZ for the SPI interface
+#param device device file for the SPI interface
 @return LGW_HAL_ERROR id the operation failed, LGW_HAL_SUCCESS else
 */
-int lgw_start(long speed);
+int lgw_start(long speed, const char *device);
 
 /**
 @brief Stop the LoRa concentrator and disconnect it
