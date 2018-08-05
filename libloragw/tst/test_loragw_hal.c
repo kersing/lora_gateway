@@ -40,6 +40,10 @@ Maintainer: Sylvain Miermont
 #define SPI_SPEED 8000000
 #endif
 
+#ifndef SPI_DEV_PATH
+#define SPI_DEV_PATH "/dev/null"
+#endif
+
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
 
@@ -308,7 +312,7 @@ int main(int argc, char **argv)
 */
 
     /* connect, configure and start the LoRa concentrator */
-    i = lgw_start(SPI_SPEED);
+    i = lgw_start(SPI_SPEED, SPI_DEV_PATH);
     if (i == LGW_HAL_SUCCESS) {
         printf("*** Concentrator started ***\n");
     } else {

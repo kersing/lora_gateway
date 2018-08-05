@@ -26,17 +26,13 @@ Maintainer: Sylvain Miermont
 
 #include <stdio.h>  /* printf fprintf */
 #include <time.h>   /* clock_nanosleep */
+#include "loragw_debug.h"
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
 
-#if DEBUG_AUX == 1
-    #define DEBUG_MSG(str)                fprintf(stderr, str)
-    #define DEBUG_PRINTF(fmt, args...)    fprintf(stderr,"%s:%d: "fmt, __FUNCTION__, __LINE__, args)
-#else
-    #define DEBUG_MSG(str)
-    #define DEBUG_PRINTF(fmt, args...)
-#endif
+#define DEBUG_MSG(str)                if(debug_aux)fprintf(stderr, str)
+#define DEBUG_PRINTF(fmt, args...)    if(debug_aux)fprintf(stderr,"%s:%d: "fmt, __FUNCTION__, __LINE__, args)
 
 /* -------------------------------------------------------------------------- */
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */

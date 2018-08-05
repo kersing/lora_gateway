@@ -27,6 +27,9 @@ Maintainer: Sylvain Miermont
 #ifndef SPI_SPEED
 #define SPI_SPEED 8000000
 #endif
+#ifndef SPI_DEV_PATH
+#define SPI_DEV_PATH "/dev/null"
+#endif
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
@@ -57,7 +60,7 @@ int main()
     }
 
     printf("Beginning of test for loragw_spi.c\n");
-    lgw_spi_open(&spi_target,SPI_SPEED);
+    lgw_spi_open(&spi_target,SPI_SPEED,SPI_DEV_PATH);
 
     /* normal R/W test */
     for (i = 0; i < TIMING_REPEAT; ++i)

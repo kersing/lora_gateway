@@ -26,20 +26,15 @@ Maintainer: Michael Coracin
 #include "loragw_aux.h"
 #include "loragw_lbt.h"
 #include "loragw_fpga.h"
+#include "loragw_debug.h"
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-#if DEBUG_LBT == 1
-    #define DEBUG_MSG(str)              fprintf(stderr, str)
-    #define DEBUG_PRINTF(fmt, args...)  fprintf(stderr,"%s:%d: "fmt, __FUNCTION__, __LINE__, args)
-    #define CHECK_NULL(a)               if(a==NULL){fprintf(stderr,"%s:%d: ERROR: NULL POINTER AS ARGUMENT\n", __FUNCTION__, __LINE__);return LGW_REG_ERROR;}
-#else
-    #define DEBUG_MSG(str)
-    #define DEBUG_PRINTF(fmt, args...)
-    #define CHECK_NULL(a)               if(a==NULL){return LGW_REG_ERROR;}
-#endif
+#define DEBUG_MSG(str)              if(debug_lbt)fprintf(stderr, str)
+#define DEBUG_PRINTF(fmt, args...)  if(debug_lbt)fprintf(stderr,"%s:%d: "fmt, __FUNCTION__, __LINE__, args)
+#define CHECK_NULL(a)               if(debug_lbt){if(a==NULL){fprintf(stderr,"%s:%d: ERROR: NULL POINTER AS ARGUMENT\n", __FUNCTION__, __LINE__);return LGW_REG_ERROR;}}else{if(a==NULL){return LGW_REG_ERROR;}}
 
 #define LBT_TIMESTAMP_MASK  0x007FF000 /* 11-bits timestamp */
 

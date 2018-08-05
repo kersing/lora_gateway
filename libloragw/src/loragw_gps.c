@@ -33,20 +33,15 @@ Maintainer: Michael Coracin
 #include <stdlib.h>
 
 #include "loragw_gps.h"
+#include "loragw_debug.h"
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-#if DEBUG_GPS == 1
-    #define DEBUG_MSG(args...)  fprintf(stderr, args)
-    #define DEBUG_ARRAY(a,b,c)  for(a=0;a<b;++a) fprintf(stderr,"%x.",c[a]);fprintf(stderr,"end\n")
-    #define CHECK_NULL(a)       if(a==NULL){fprintf(stderr,"%s:%d: ERROR: NULL POINTER AS ARGUMENT\n", __FUNCTION__, __LINE__);return LGW_GPS_ERROR;}
-#else
-    #define DEBUG_MSG(args...)
-    #define DEBUG_ARRAY(a,b,c)  for(a=0;a!=0;){}
-    #define CHECK_NULL(a)       if(a==NULL){return LGW_GPS_ERROR;}
-#endif
+#define DEBUG_MSG(args...)  if(debug_gps)fprintf(stderr, args)
+#define DEBUG_ARRAY(a,b,c)  if(debug_gps)for(a=0;a<b;++a) fprintf(stderr,"%x.",c[a]);fprintf(stderr,"end\n")
+#define CHECK_NULL(a)       if(debug_gps){if(a==NULL){fprintf(stderr,"%s:%d: ERROR: NULL POINTER AS ARGUMENT\n", __FUNCTION__, __LINE__);return LGW_GPS_ERROR;}}else{if(a==NULL){return LGW_GPS_ERROR;}}
 #define TRACE()         fprintf(stderr, "@ %s %d\n", __FUNCTION__, __LINE__);
 
 /* -------------------------------------------------------------------------- */
