@@ -1,5 +1,5 @@
 /*
- * multitech.h
+ * RAK831 + RAK USB to SPI module
  *
  *  Created on: Dec  3, 2016
  *      Author: Jac Kersing
