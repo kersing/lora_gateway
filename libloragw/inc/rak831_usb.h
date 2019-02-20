@@ -15,6 +15,7 @@
 #define VID		        0x0403
 #define PID		        0x6010
 
-#define DEVICE_INDEX  1
+/* FTDI device index - used if there are multiple FT232H on the system. */
+#define DEVICE_INDEX  0
 
 #endif /* _RAK831_H_ */
