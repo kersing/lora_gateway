@@ -15,4 +15,6 @@
 #define VID		        0x0403
 #define PID		        0x6010
 
+#define DEVICE_INDEX  1
+
 #endif /* _RAK831_H_ */

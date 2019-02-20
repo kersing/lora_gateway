@@ -58,12 +58,16 @@ static pthread_mutex_t mx_spi = PTHREAD_MUTEX_INITIALIZER;
 int lgw_spi_open(void **spi_target_ptr) {
 	struct mpsse_context *mpsse = NULL;
 	int a, b;
-	
+
 	/* check input variables */
 	CHECK_NULL(spi_target_ptr); /* cannot be null, must point on a void pointer (*spi_target_ptr can be null) */
-	
+
 	/* try to open the first available FTDI device matching VID/PID parameters */
+#ifndef DEVICE_INDEX
 	mpsse = OpenIndex(VID,PID,SPI0, SIX_MHZ, MSB, IFACE_A, NULL, NULL, 0);
+#else
+	mpsse = OpenIndex(VID,PID,SPI0, SIX_MHZ, MSB, IFACE_A, NULL, NULL, DEVICE_INDEX);
+#endif
 	if (mpsse == NULL) {
 		DEBUG_MSG("ERROR: MPSSE OPEN FUNCTION RETURNED NULL\n");
 		return LGW_SPI_ERROR;
@@ -72,7 +76,7 @@ int lgw_spi_open(void **spi_target_ptr) {
 		DEBUG_MSG("ERROR: MPSSE OPEN FUNCTION FAILED\n");
 		return LGW_SPI_ERROR;
 	}
-	
+
 #ifdef _MULTITECH_H_
 	/* toggle pin ADBUS5 of the FT232H */
 	/* On the MTAC LORA, it resets the SX1301 */
@@ -88,7 +92,7 @@ int lgw_spi_open(void **spi_target_ptr) {
 		DEBUG_MSG("ERROR: IMPOSSIBLE TO TOGGLE GPIOL1/ADBUS5\n");
 		return LGW_SPI_ERROR;
 	}
-	
+
 	DEBUG_PRINTF("SPI port opened and configured ok\ndesc: %s\nPID: 0x%04X\nVID: 0x%04X\nclock: %d\nLibmpsse version: 0x%02X\n", GetDescription(mpsse), GetPid(mpsse), GetVid(mpsse), GetClock(mpsse), Version());
 	*spi_target_ptr = (void *)mpsse;
 	return LGW_SPI_SUCCESS;
@@ -99,12 +103,12 @@ int lgw_spi_open(void **spi_target_ptr) {
 /* SPI release */
 int lgw_spi_close(void *spi_target) {
 	struct mpsse_context *mpsse = spi_target;
-	
+
 	/* check input variables */
 	CHECK_NULL(spi_target);
-	
+
 	Close(mpsse);
-	
+
 	/* close return no status, assume success (0_o) */
 	return LGW_SPI_SUCCESS;
 }
@@ -118,13 +122,13 @@ int lgw_spi_w(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, ui
 	uint8_t out_buf[3];
     uint8_t command_size;
 	int a, b, c;
-	
+
 	/* check input variables */
 	CHECK_NULL(spi_target);
 	if ((address & 0x80) != 0) {
 		DEBUG_MSG("WARNING: SPI address > 127\n");
 	}
-	
+
     /* prepare frame to be sent */
     if (spi_mux_mode == LGW_SPI_MUX_MODE1) {
         out_buf[0] = spi_mux_target;
@@ -136,7 +140,7 @@ int lgw_spi_w(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, ui
         out_buf[1] = data;
         command_size = 2;
     }
-	
+
 	/* lock USB bus */
 	pthread_mutex_lock(&mx_spi);
 
@@ -147,7 +151,7 @@ int lgw_spi_w(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, ui
 
 	/* unlock USB bus */
 	pthread_mutex_unlock(&mx_spi);
-	
+
 	/* determine return code */
 	if ((a != MPSSE_OK) || (b != MPSSE_OK) || (c != MPSSE_OK)) {
 		DEBUG_MSG("ERROR: SPI WRITE FAILURE\n");
@@ -169,14 +173,14 @@ int lgw_spi_r(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, ui
     uint8_t command_size;
 	uint8_t *in_buf = NULL;
 	int a, b;
-	
+
 	/* check input variables */
 	CHECK_NULL(spi_target);
 	if ((address & 0x80) != 0) {
 		DEBUG_MSG("WARNING: SPI address > 127\n");
 	}
 	CHECK_NULL(data);
-	
+
     /* prepare frame to be sent */
     if (spi_mux_mode == LGW_SPI_MUX_MODE1) {
         out_buf[0] = spi_mux_target;
@@ -188,7 +192,7 @@ int lgw_spi_r(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, ui
         out_buf[1] = 0x00;
         command_size = 2;
     }
-	
+
 	/* lock USB bus */
 	pthread_mutex_lock(&mx_spi);
 
@@ -196,7 +200,7 @@ int lgw_spi_r(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, ui
 	a = Start(mpsse);
 	in_buf = (uint8_t *)Transfer(mpsse, (char *)out_buf, command_size);
 	b = Stop(mpsse);
-	
+
 	/* unlock USB bus */
 	pthread_mutex_unlock(&mx_spi);
 
@@ -231,7 +235,7 @@ int lgw_spi_wb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 	int size_to_do, buf_size, chunk_size, offset;
 	int a=0, b=0, c=0;
 	int i;
-	
+
 	/* check input parameters */
 	CHECK_NULL(spi_target);
 	if ((address & 0x80) != 0) {
@@ -242,7 +246,7 @@ int lgw_spi_wb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 		DEBUG_MSG("ERROR: BURST OF NULL LENGTH\n");
 		return LGW_SPI_ERROR;
 	}
-	
+
     /* prepare command bytes */
     if (spi_mux_mode == LGW_SPI_MUX_MODE1) {
         command[0] = spi_mux_target;
@@ -253,7 +257,7 @@ int lgw_spi_wb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
         command_size = 1;
     }
 	size_to_do = size + command_size; /* add a byte for the address */
-	
+
 	/* allocate data buffer */
 	buf_size = (size_to_do < LGW_BURST_CHUNK) ? size_to_do : LGW_BURST_CHUNK;
 	out_buf = malloc(buf_size);
@@ -261,7 +265,7 @@ int lgw_spi_wb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 		DEBUG_MSG("ERROR: MALLOC FAIL\n");
 		return LGW_SPI_ERROR;
 	}
-	
+
 	/* lock USB bus */
 	pthread_mutex_lock(&mx_spi);
 
@@ -282,13 +286,13 @@ int lgw_spi_wb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 		size_to_do -= chunk_size; /* subtract the quantity of data already transferred */
 	}
 	c = Stop(mpsse);
-	
+
 	/* unlock USB bus */
 	pthread_mutex_unlock(&mx_spi);
 
 	/* deallocate data buffer */
 	free(out_buf);
-	
+
 	/* determine return code (only the last FastWrite is checked) */
 	if ((a != MPSSE_OK) || (b != MPSSE_OK) || (c != MPSSE_OK)) {
 		DEBUG_MSG("ERROR: SPI BURST WRITE FAILURE\n");
@@ -312,7 +316,7 @@ int lgw_spi_rb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 	int size_to_do, chunk_size, offset;
 	int a=0, b=0, c=0, d=0;
 	int i;
-	
+
 	/* check input parameters */
 	CHECK_NULL(spi_target);
 	if ((address & 0x80) != 0) {
@@ -323,7 +327,7 @@ int lgw_spi_rb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 		DEBUG_MSG("ERROR: BURST OF NULL LENGTH\n");
 		return LGW_SPI_ERROR;
 	}
-	
+
 	/* prepare command bytes */
     if (spi_mux_mode == LGW_SPI_MUX_MODE1) {
         command[0] = spi_mux_target;
@@ -334,7 +338,7 @@ int lgw_spi_rb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
         command_size = 1;
     }
 	size_to_do = size;
-	
+
 	/* lock USB bus */
 	pthread_mutex_lock(&mx_spi);
 
@@ -348,7 +352,7 @@ int lgw_spi_rb(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target, u
 		size_to_do -= chunk_size; /* subtract the quantity of data already transferred */
 	}
 	d = Stop(mpsse);
-	
+
 	/* unlock USB bus */
 	pthread_mutex_unlock(&mx_spi);
 
