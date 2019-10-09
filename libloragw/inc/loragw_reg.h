@@ -402,7 +402,7 @@ used with SX1301AP2 reference design).
 @param device device file for SPI communications
 @return status of register operation (LGW_REG_SUCCESS/LGW_REG_ERROR)
 */
-int lgw_connect(bool spi_only, uint32_t tx_notch_freq, long speed, const char *device);
+int lgw_connect(bool spi_only, uint32_t tx_notch_freq);
 
 /**
 @brief Disconnect LoRa concentrator by closing SPI link

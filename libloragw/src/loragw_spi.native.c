@@ -49,15 +49,15 @@ Maintainer: Sylvain Miermont
 #define READ_ACCESS     0x00
 #define WRITE_ACCESS    0x80
 // This is handled in an other file to create more hardware freedom
-//#define SPI_SPEED       8000000
-//#define SPI_DEV_PATH    "/dev/spidev0.0"
+#define SPI_SPEED       (atol(getenv("LORAGW_SPEED")==NULL ? "8000000" : getenv("LORAGW_SPEED")))
+#define SPI_DEV_PATH    (getenv("LORAGW_SPI")==NULL ? "/dev/spidev0.0" : getenv("LORAGW_SPI"))
 //#define SPI_DEV_PATH    "/dev/spidev32766.0"
 
 /* -------------------------------------------------------------------------- */
 /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
 
 /* SPI initialization and configuration */
-int lgw_spi_open(void **spi_target_ptr, long speed, const char *device) {
+int lgw_spi_open(void **spi_target_ptr) {
     int *spi_device = NULL;
     int dev;
     int a=0, b=0;
@@ -74,11 +74,7 @@ int lgw_spi_open(void **spi_target_ptr, long speed, const char *device) {
     }
 
     /* open SPI device */
-    if (device != NULL) {
-        dev = open(device, O_RDWR);
-    } else {
-        dev = open(SPI_DEV_PATH, O_RDWR);
-    }
+    dev = open(SPI_DEV_PATH, O_RDWR);
     if (dev < 0) {
         DEBUG_PRINTF("ERROR: failed to open SPI device %s\n", SPI_DEV_PATH);
         return LGW_SPI_ERROR;
@@ -96,8 +92,7 @@ int lgw_spi_open(void **spi_target_ptr, long speed, const char *device) {
     }
 
     /* setting SPI max clk (in Hz) */
-    //i = SPI_SPEED;
-    i = speed;
+    i = SPI_SPEED;
     a = ioctl(dev, SPI_IOC_WR_MAX_SPEED_HZ, &i);
     b = ioctl(dev, SPI_IOC_RD_MAX_SPEED_HZ, &i);
     if ((a < 0) || (b < 0)) {
