@@ -15,4 +15,7 @@
 #define VID		        0x0403
 #define PID		        0x6010
 
+/* FTDI device index - used if there are multiple FT232H on the system. */
+#define DEVICE_INDEX    (atoi(getenv("DEVICE_INDEX")==NULL ? "0" : getenv("DEVICE_INDEX")))
+
 #endif /* _RAK831_H_ */

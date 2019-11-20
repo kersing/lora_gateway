@@ -63,7 +63,8 @@ int lgw_spi_open(void **spi_target_ptr) {
 	CHECK_NULL(spi_target_ptr); /* cannot be null, must point on a void pointer (*spi_target_ptr can be null) */
 	
 	/* try to open the first available FTDI device matching VID/PID parameters */
-	mpsse = OpenIndex(VID,PID,SPI0, SIX_MHZ, MSB, IFACE_A, NULL, NULL, 0);
+	mpsse = OpenIndex(VID,PID,SPI0, SIX_MHZ, MSB, IFACE_A, NULL, NULL, DEVICE_INDEX);
+
 	if (mpsse == NULL) {
 		DEBUG_MSG("ERROR: MPSSE OPEN FUNCTION RETURNED NULL\n");
 		return LGW_SPI_ERROR;
